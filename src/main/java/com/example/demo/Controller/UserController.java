@@ -69,7 +69,7 @@ public User createUser(@RequestBody User user) {
 public ResponseEntity<?> updateUser(@PathVariable Long id, @RequestBody User newUser) {
     return userRepository.findById(id)
             .map(user -> {
-                user.setName(newUser.get());
+                user.setFullName(newUser.getFullName());
                 user.setEmail(newUser.getEmail());
                 return ResponseEntity.ok(userRepository.save(user));
             })
