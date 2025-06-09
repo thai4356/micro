@@ -5,9 +5,13 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
@@ -18,6 +22,7 @@ import com.example.demo.Service.UserService;
 
 @RestController
 @RequestMapping("/api/users")
+@CrossOrigin(origins = "*")
 public class UserController {
 
      @Autowired
@@ -53,6 +58,22 @@ public ResponseEntity<?> deleteUser(@PathVariable Long id) {
 
     userService.deleteUser(id);
     return ResponseEntity.ok("Đã xóa user và toàn bộ khóa học liên quan.");
+}
+
+@PostMapping
+public User createUser(@RequestBody User user) {
+    return userRepository.save(user);
+}
+
+@PutMapping("/{id}")
+public ResponseEntity<?> updateUser(@PathVariable Long id, @RequestBody User newUser) {
+    return userRepository.findById(id)
+            .map(user -> {
+                user.setName(newUser.get());
+                user.setEmail(newUser.getEmail());
+                return ResponseEntity.ok(userRepository.save(user));
+            })
+            .orElse(ResponseEntity.notFound().build());
 }
 
 
